@@ -3,7 +3,6 @@ var light = require('./knx.js').light
 var lightDim = require('./knx.js').lightDim
 
 const wss = new WebSocket.Server({ port: 8080 });
-var val = 10;
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(message) {
@@ -19,9 +18,7 @@ wss.on('connection', function connection(ws) {
         light.switchOff();
       }
     }else if(obj.topic == 'dim1'){
-      var val = obj.payload * 2
-        lightDim.write(val);
-
+        lightDim.write(obj.payload);
     }
 
 
