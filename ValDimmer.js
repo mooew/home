@@ -1,10 +1,10 @@
 /**
 * knx.js - a pure Javascript library for KNX
-* (C) 2016 Elias Karakoulakis
+* (C) 2018 wietse
 */
 
 const util = require('util');
-const knx = require('../../');
+const knx = require('knx');
 
 function ValDimmer(options, conn) {
   if (options == null || options.ga == null) {
@@ -53,4 +53,4 @@ ValDimmer.prototype.write = function (v) {
   this.control.write(v);
 }
 
-//module.exports = ValDimmer;
+module.exports.ValDimmer = ValDimmer;

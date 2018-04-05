@@ -9,7 +9,7 @@ wss.on('connection', function connection(ws) {
     console.log('received: %s', message);
 
     var obj = JSON.parse(message)
-
+    console.log('parse: ' + obj)
     if(obj.topic == 'switch1'){
       if(obj.payload){
         light.switchOn();
@@ -25,4 +25,19 @@ wss.on('connection', function connection(ws) {
   });
 
   ws.send('something');
+
+  light.status.on('change', function(oldvalue, newvalue) {
+    console.log("#### feedback LIGHT status: %j", newvalue);
+    var res = { topic: 'switch1', payload: newvalue }
+    ws.send(JSON.stringify(res));
+  });
+
+  lightDim.status.on('change', function(oldvalue, newvalue) {
+    console.log("#### feedback DIM status: %j", newvalue);
+    var res = { topic: 'dim1', payload: newvalue }
+    ws.send(JSON.stringify(res));
+  });
+
+
+
 });

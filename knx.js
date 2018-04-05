@@ -1,4 +1,5 @@
 var knx = require('knx');
+var ValDimmer = require('./ValDimmer.js').ValDimmer
 
 var output_pi_heat = new knx.Datapoint({ga: '0/0/10', dpt: 'DPT5.001'});
 
@@ -37,23 +38,29 @@ var connection = knx.Connection({
   }
 });
 
+//----------------------------LIGHT---------------------------------------------
+
 var light = new knx.Devices.BinarySwitch({ga: '1/0/0', status_ga: '1/0/1'}, connection);
 console.log("The current light status is %j", light.status.current_value);
+
 light.control.on('change', function(oldvalue, newvalue) {
-  console.log("**** LIGHT control changed from: %j to: %j", oldvalue, newvalue);
+  //console.log("**** LIGHT control changed from: %j to: %j", oldvalue, newvalue);
 });
 light.status.on('change', function(oldvalue, newvalue) {
   console.log("**** LIGHT status changed from: %j to: %j", oldvalue, newvalue);
 });
 //light.switchOn(); // or switchOff();
 
-var lightDim = new knx.Devices.ValDimmer({ga: '1/0/3', status_ga: '1/0/4'}, connection);
+//----------------------------DIM-----------------------------------------------
+
+var lightDim = new ValDimmer({ga: '1/0/3', status_ga: '1/0/4'}, connection);
 console.log("The current light status is %j", lightDim.status.current_value);
+
 lightDim.control.on('change', function(oldvalue, newvalue) {
-  console.log("**** LIGHT control changed from: %j to: %j", oldvalue, newvalue);
+  //console.log("**** DIM control changed from: %j to: %j", oldvalue, newvalue);
 });
 lightDim.status.on('change', function(oldvalue, newvalue) {
-  console.log("**** LIGHT status changed from: %j to: %j", oldvalue, newvalue);
+  console.log("**** DIM status changed from: %j to: %j", oldvalue, newvalue);
 });
 
 
