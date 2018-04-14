@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 var light = require('./knx.js').light
 var lightDim = require('./knx.js').lightDim
+//var temp = require('./knx.js').temp
 
 const wss = new WebSocket.Server({ port: 8080 });
 
@@ -38,6 +39,14 @@ wss.on('connection', function connection(ws) {
     ws.send(JSON.stringify(res));
   });
 
+
+/*
+  temp.status.on('change', function(oldvalue, newvalue) {
+    console.log("#### feedback temp status: %j", newvalue);
+    var res = { topic: 'temp1', payload: newvalue }
+    ws.send(JSON.stringify(res));
+  });
+*/
 
 
 });
