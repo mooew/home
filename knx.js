@@ -6,7 +6,7 @@ var ValDimmer = require('./ValDimmer.js').ValDimmer
 
 var connection = knx.Connection({
   ipAddr: '192.168.2.221', ipPort: 3671,
-  physAddr: '1.1.128',
+  physAddr: '1.1.129',
   //debug: true,
   handlers: {
     connected: function() {
@@ -65,30 +65,51 @@ var knxLightSwitch = [];
 var knxLightDim = [];
 
 //---------------------connect switch lights-----------------------------//
-/*
+
 for(j in lights){
+  console.log("index switch is " + j + "!!!!!!!!!!!");
   knxLightSwitch[j] = new knx.Devices.BinarySwitch(
     {ga: lights[j].ga, status_ga: lights[j].status_ga},
     connection
   );
-  console.log("The light %j status is %j", j ,light.status.current_value);
+  console.log("The light %j status is %j", j, knxLightSwitch[j].status.current_value);
 }
+
+//---------------------connect dim lights-----------------------------//
+
+for(j in lights){
+  console.log("index dim is " + j + "!!!!!!!!!!!");
+  if(typeof lights[j].dim !== "undefined"){
+    knxLightDim[j] = new ValDimmer(
+      {ga: lights[j].dim, status_ga: lights[j].status_dim},
+      connection
+    );
+    console.log("The light %j status is %j", j, knxLightDim[j].status.current_value);
+  }
+}
+
 //listen for status changes
-knxLights[0].status.on('change', function(oldvalue, newvalue) {
+/*
+knxLightSwitch[0].status.on('change', function(oldvalue, newvalue) {
   console.log("**** LIGHT status changed from: %j to: %j", oldvalue, newvalue);
 });
-/*/
+knxLightDim[0].status.on('change', function(oldvalue, newvalue) {
+  console.log("**** LIGHT dim status changed from: %j to: %j", oldvalue, newvalue);
+});
+
+*/
+
 //---------------------connect switch lights-----------------------------//
 
 
-var light = new knx.Devices.BinarySwitch({ga: '1/0/0', status_ga: '1/0/1'}, connection);
-console.log("The current light status is %j", light.status.current_value);
+//var light = new knx.Devices.BinarySwitch({ga: '1/0/0', status_ga: '1/0/1'}, connection);
+//console.log("The current light status is %j", light.status.current_value);
 
 
 //----------------------------DIM-----------------------------------------------
 
-var lightDim = new ValDimmer({ga: '1/0/3', status_ga: '1/0/4'}, connection);
-console.log("The current light status is %j", lightDim.status.current_value);
+//var lightDim = new ValDimmer({ga: '1/0/3', status_ga: '1/0/4'}, connection);
+//console.log("The current light status is %j", lightDim.status.current_value);
 
 
 
@@ -105,8 +126,8 @@ temp.status.on('change', function(oldvalue, newvalue) {
 */
 
 
-module.exports.light = light
-module.exports.lightDim = lightDim
+//module.exports.light = light
+//module.exports.lightDim = lightDim
 //module.exports.temp = temp
 module.exports.connection = connection
 module.exports.knxLightSwitch = knxLightSwitch
