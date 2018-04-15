@@ -23,10 +23,11 @@ var connection = knx.Connection({
     },
     // display telegrams on th eknx bus
     event: function (evt, src, dest, value) {
+/*
       console.log("%s **** KNX EVENT: %j, src: %j, dest: %j, value: %j",
       new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),
           evt, src, dest, value);
-
+*/
     },
     // get notified on connection errors
     error: function(connstatus) {
@@ -56,8 +57,15 @@ var lights = [
   },{
   "id": 3,
   "name": "light3",
-  "ga": '1/1/0',
-  "status_ga": '1/1/1',
+  "ga": '1/2/0',
+  "status_ga": '1/2/1',
+  },{
+  "id": 4,
+  "name": "light4",
+  "ga": '1/3/0',
+  "status_ga": '1/3/1',
+  "dim": '1/3/3',
+  "status_dim": '1/3/4',
   }
 ]
 
