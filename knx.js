@@ -2,7 +2,7 @@ var knx = require('knx');
 var ValDimmer = require('./ValDimmer.js').ValDimmer
 //var Temp = require('./temperature.js').Temp
 
-
+var lights = require('./ets.js').lights
 
 var connection = knx.Connection({
   ipAddr: '192.168.2.221', ipPort: 3671,
@@ -38,36 +38,6 @@ var connection = knx.Connection({
 
 //----------------------------LIGHT---------------------------------------------
 
-var lights = [
-
-  {
-  "id": 1,
-  "name":"light1",
-  "ga": '1/0/0',
-  "status_ga": '1/0/1',
-  "dim": '1/0/3',
-  "status_dim": '1/0/4',
-},{
-  "id": 2,
-  "name": "light2",
-  "ga": '1/1/0',
-  "status_ga": '1/1/1',
-  "dim": '1/1/3',
-  "status_dim": '1/1/4',
-  },{
-  "id": 3,
-  "name": "light3",
-  "ga": '1/2/0',
-  "status_ga": '1/2/1',
-  },{
-  "id": 4,
-  "name": "light4",
-  "ga": '1/3/0',
-  "status_ga": '1/3/1',
-  "dim": '1/3/3',
-  "status_dim": '1/3/4',
-  }
-]
 
 var knxLightSwitch = [];
 var knxLightDim = [];
@@ -134,9 +104,6 @@ temp.status.on('change', function(oldvalue, newvalue) {
 */
 
 
-//module.exports.light = light
-//module.exports.lightDim = lightDim
-//module.exports.temp = temp
-module.exports.connection = connection
+
 module.exports.knxLightSwitch = knxLightSwitch
 module.exports.knxLightDim = knxLightDim
