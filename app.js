@@ -57,6 +57,7 @@ wss.on('connection', function connection(ws, req) {
     if(id < 100){
       if(obj.payload){
         knxLightSwitch[id-1].switchOn();
+        
       }
       else {
 
