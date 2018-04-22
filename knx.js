@@ -8,6 +8,7 @@ var connection = knx.Connection({
   ipAddr: '192.168.2.221', ipPort: 3671,
   physAddr: '1.1.129',
   //debug: true,
+  minimumDelay: 10,
   handlers: {
     connected: function() {
       console.log('Connected to KNX!');
