@@ -9,7 +9,7 @@ var connection = knx.Connection({
   physAddr: '1.1.129',
   //debug: true,
   // wait at least 10 millisec between each datagram
-  minimumDelay: 10,
+  minimumDelay: 100,
   handlers: {
     connected: function() {
       console.log('Connected to KNX!');
