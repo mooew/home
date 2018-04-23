@@ -12,7 +12,7 @@ var knxLightDim = require('./knx.js').knxLightDim
 
 const wss = new WebSocket.Server({ port: 8080 });
 
-for( let i in knxLightSwitch){
+for(let i in knxLightSwitch){
   console.log("listening for light status %j", +i + 1);
   knxLightSwitch[i].status.on('change', function(oldvalue, newvalue) {
     console.log("#### feedback LIGHT %j status: %j", +i + 1, newvalue);
@@ -27,7 +27,7 @@ for( let i in knxLightSwitch){
   });
 };
 
-for( let i in knxLightDim){
+for(let i in knxLightDim){
   console.log("listening for light dim %j", i);
   knxLightDim[i].status.on('change', function(oldvalue, newvalue) {
     console.log("#### feedback LIGHT %j DIM status: %j", +i + 101, newvalue);
