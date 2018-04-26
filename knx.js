@@ -5,7 +5,7 @@ var ValDimmer = require('./ValDimmer.js').ValDimmer
 var lights = require('./ets.js').lights
 
 var connection = knx.Connection({
-  ipAddr: '192.168.2.221', ipPort: 3671,
+  ipAddr: '192.168.2.247', ipPort: 3671,
   physAddr: '1.1.129',
   //debug: true,
   // wait at least 10 millisec between each datagram
