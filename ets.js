@@ -81,5 +81,34 @@ var screens = [
   }
 ]
 
+var sensors = [
+  {
+  "id": 1,
+  "name": "tempSensor1",
+  "sensor": '2/0/0',
+  },
+  {
+  "id": 2,
+  "name": "luxSensor1",
+  "sensor": '2/0/1',
+  }
+]
+
+var triggers = [
+  {
+  "id": 1,
+  "name": "auroMotion",
+  "status_ga": '3/0/0',
+  },
+  {
+  "id": 2,
+  "name": "auroLed",
+  "ga": '3/0/1',
+  "status_ga": '3/10/0',        //!!!!!!!!!!!!!!!
+  }
+]
+
 module.exports.lights = lights;
 module.exports.screens = screens;
+module.exports.sensors = sensors;
+module.exports.triggers = triggers;

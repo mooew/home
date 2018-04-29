@@ -6,7 +6,8 @@ var lightDim = require('./knx.js').lightDim
 var knxLightSwitch = require('./knx.js').knxLightSwitch
 var knxLightDim = require('./knx.js').knxLightDim
 var knxScreens = require('./knx.js').knxScreens
-//var temp = require('./knx.js').temp
+var knxSensors = require('./knx.js').knxSensors
+var knxTriggers = require('./knx.js').knxTriggers
 
 
 
@@ -57,12 +58,42 @@ for(let i in knxScreens){
   });
 };
 
+for(let i in knxSensors){
+  console.log("listening for sensor %j", i);
+  knxSensors[i].status.on('change', function(oldvalue, newvalue) {
+    console.log("#### feedback SENSOR %j  status: %j", +i + 301, newvalue);
+    var res = { topic: +i + 301, payload: newvalue};
+    wss.clients.forEach(function each(client) {
+      if ( client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(res)); //CurrentPosition
+      } else {
+        console.log("sorry client is closed");
+      };
+    });
+  });
+};
+
+for(let i in knxTriggers){
+  console.log("listening for triggers %j", i);
+  knxTriggers[i].status.on('change', function(oldvalue, newvalue) {
+    console.log("#### feedback TRIGGER %j  status: %j", +i + 401, newvalue);
+    var res = { topic: +i + 401, payload: newvalue};
+    wss.clients.forEach(function each(client) {
+      if ( client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(res)); //CurrentPosition
+      } else {
+        console.log("sorry client is closed");
+      };
+    });
+  });
+};
+
 wss.on('connection', function connection(ws, req) {
   const ip = req.connection.remoteAddress;
   console.log("Socket connected to: " + ip);
 
 
-//--------------------INCOMING--------------------------------//
+//--------------------INCOMING SOCKET SEND KNX--------------------------------//
   ws.on('message', function incoming(message) {
     console.log('received: %s', message);
 
@@ -72,16 +103,21 @@ wss.on('connection', function connection(ws, req) {
     if(id < 100){
       if(obj.payload){
         knxLightSwitch[id-1].switchOn();
-
       }
       else {
-
         knxLightSwitch[id-1].switchOff();
       }
     }else if(id >= 100 && id < 200){
         knxLightDim[id-101].write(obj.payload);
-    }else if(id >= 200){
+    }else if(id >= 200 && id < 300){
       knxScreens[id-201].write(obj.payload); //TargetPosition
+    }else if(id >= 400 && id < 500){
+      if(obj.payload){
+        knxTriggers[id-401].switchOn();
+      }
+      else {
+        knxTriggers[id-401].switchOff();
+      }
     }
 
 

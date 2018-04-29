@@ -1,10 +1,15 @@
 var knx = require('knx');
 var ValDimmer = require('./ValDimmer.js').ValDimmer
-var Screen = require('./Screens.js').Screen
+var Screen = require('./Screen.js').Screen
+var Sensor = require('./Sensor.js').Sensor
+var Trigger = require('./Trigger.js').Trigger
+
 //var Temp = require('./temperature.js').Temp
 
 var lights = require('./ets.js').lights
 var screens = require('./ets.js').screens
+var sensors = require('./ets.js').sensors
+var triggers = require('./ets.js').triggers
 
 var connection = knx.Connection({
   ipAddr: '192.168.2.247', ipPort: 3671,
@@ -47,6 +52,8 @@ var connection = knx.Connection({
 var knxLightSwitch = [];
 var knxLightDim = [];
 var knxScreens = [];
+var knxSensors = [];
+var knxTriggers = [];
 
 //---------------------connect switch lights-----------------------------//
 
@@ -80,9 +87,27 @@ for(j in screens){
       connection
     );
     console.log("The screen %j status is %j", j, knxScreens[j].status.current_value);
-
 }
 
+//---------------------connect sensor-----------------------------//
+for(j in sensors){
+  console.log("index sensor is " + j + "!!!!!!!!!!!");
+    knxSensors[j] = new Sensor(
+      {sensor: sensors[j].sensor},
+      connection
+    );
+    console.log("The %j status is %j",sensors[j].name , knxSensors[j].status.current_value);
+}
+
+//---------------------connect sensor-----------------------------//
+for(j in triggers){
+  console.log("index trigger is " + j + "!!!!!!!!!!!");
+    knxTriggers[j] = new Trigger(
+      {ga: triggers[j].ga, status_ga: triggers[j].status_ga},
+      connection
+    );
+    //console.log("The %j status is %j",triggers[j].name , knxTriggers[j].status.current_value);
+}
 
 //listen for status changes
 /*
@@ -126,3 +151,5 @@ temp.status.on('change', function(oldvalue, newvalue) {
 module.exports.knxLightSwitch = knxLightSwitch
 module.exports.knxLightDim = knxLightDim
 module.exports.knxScreens = knxScreens
+module.exports.knxSensors = knxSensors
+module.exports.knxTriggers = knxTriggers

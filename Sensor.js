@@ -6,29 +6,31 @@
 const util = require('util');
 const knx = require('knx');
 
-function Temp(options, conn) {
-  if (options == null || options.ga == null) {
+function Sensor(options, conn) {
+  if (options == null || options.sensor == null) {
     throw "must supply at least { ga }!";
   }
   this.control_ga = options.ga;
-  this.status_ga = options.status_ga;
+  this.temperature = options.sensor;
   if (conn) this.bind(conn);
 }
 
-Temp.prototype.bind = function (conn) {
+Sensor.prototype.bind = function (conn) {
   if (!conn) console.trace("must supply a valid KNX connection to bind to");
   this.conn = conn;
-  this.control = new knx.Datapoint({ga: this.control_ga, dpt: 'DPT5.001'}, conn);
-  if (this.status_ga) {
-    this.status = new knx.Datapoint({ga: this.status_ga, dpt: 'DPT5.001'}, conn);
+  if (this.control_ga) {
+  this.control = new knx.Datapoint({ga: this.control_ga, dpt: 'DPT9.000'}, conn);
+}
+  if (this.temperature) {
+    this.status = new knx.Datapoint({ga: this.temperature, dpt: 'DPT9.000'}, conn);
   }
 }
 
 // EventEmitter proxy for status ga (if its set), otherwise proxy control ga
-Temp.prototype.on = function () {
+Sensor.prototype.on = function () {
   var argsArray = Array.prototype.slice.call(arguments);
-  var tgt = (this.status_ga ? this.status : this.control);
-  // if(this.status_ga){this.status}
+  var tgt = (this.temperature ? this.status : this.control);
+  // if(this.temperature){this.status}
   //  else this.control
   try {
     tgt.on.apply(tgt, argsArray);
@@ -37,20 +39,23 @@ Temp.prototype.on = function () {
   }
 }
 
-Temp.prototype.dim = function (value) {
+
+// UNUSED //
+Sensor.prototype.dim = function (value) {
   if (!this.conn) console.trace("must supply a valid KNX connection to bind to");
   this.control.write(value);
   console.log(value);
 }
 
-Temp.prototype.switchOff = function () {
+Sensor.prototype.switchOff = function () {
   if (!this.conn) console.trace("must supply a valid KNX connection to bind to");
   this.control.write(0);
 }
 
-Temp.prototype.write = function (v) {
+Sensor.prototype.write = function (v) {
   if (!this.conn) console.trace("must supply a valid KNX connection to bind to");
   this.control.write(v);
 }
+// UNUSED //
 
-module.exports.Temp = Temp;
+module.exports.Sensor = Sensor;
