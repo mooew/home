@@ -1,12 +1,15 @@
 var knx = require('knx');
 var ValDimmer = require('./ValDimmer.js').ValDimmer
+var Screen = require('./Screens.js').Screen
 //var Temp = require('./temperature.js').Temp
 
 var lights = require('./ets.js').lights
+var screens = require('./ets.js').screens
 
 var connection = knx.Connection({
   ipAddr: '192.168.2.247', ipPort: 3671,
-  physAddr: '1.1.129',
+  //physAddr: '1.1.130',    //msi
+  physAddr: '1.1.129',  //pi zero
   //debug: true,
   // wait at least 10 millisec between each datagram
   minimumDelay: 100,
@@ -43,6 +46,7 @@ var connection = knx.Connection({
 
 var knxLightSwitch = [];
 var knxLightDim = [];
+var knxScreens = [];
 
 //---------------------connect switch lights-----------------------------//
 
@@ -67,6 +71,18 @@ for(j in lights){
     console.log("The light %j status is %j", j, knxLightDim[j].status.current_value);
   }
 }
+
+//---------------------connect screens-----------------------------//
+for(j in screens){
+  console.log("index screen is " + j + "!!!!!!!!!!!");
+    knxScreens[j] = new Screen(
+      {ga: screens[j].ga, status_ga: screens[j].status_ga},
+      connection
+    );
+    console.log("The screen %j status is %j", j, knxScreens[j].status.current_value);
+
+}
+
 
 //listen for status changes
 /*
@@ -109,3 +125,4 @@ temp.status.on('change', function(oldvalue, newvalue) {
 
 module.exports.knxLightSwitch = knxLightSwitch
 module.exports.knxLightDim = knxLightDim
+module.exports.knxScreens = knxScreens
