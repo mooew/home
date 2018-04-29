@@ -72,4 +72,14 @@ var lights = [
   }
 ]
 
+var screens = [
+  {
+  "id": 1,
+  "name": "screen1",
+  "ga": '1/1/100',
+  "status_ga": '1/1/101',
+  }
+]
+
 module.exports.lights = lights;
+module.exports.screens = screens;
