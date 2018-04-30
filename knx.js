@@ -11,6 +11,14 @@ var screens = require('./ets.js').screens
 var sensors = require('./ets.js').sensors
 var triggers = require('./ets.js').triggers
 
+var knxCom = {
+  "lights": {"name": "light","offset": 0, "ga": []},
+  "dimlights": {"name": "dim","offset": 100, "ga": []},
+  "screens": {"name": "screen","offset": 200, "ga": []},
+  "sensors": {"name": "senor", "offset": 300, "ga": []},
+  "triggers": {"name": "trigger","offset": 400, "ga": []}
+}
+
 var connection = knx.Connection({
   ipAddr: '192.168.2.247', ipPort: 3671,
   //physAddr: '1.1.130',    //msi
@@ -21,15 +29,6 @@ var connection = knx.Connection({
   handlers: {
     connected: function() {
       console.log('Connected to KNX!');
-/*
-      for (var key in ets){
-        //console.log(ets)
-        var obj = ets[key];
-        obj.bind(connection)
-      }
-*/
-
-
     },
     // display telegrams on th eknx bus
     event: function (evt, src, dest, value) {
@@ -46,24 +45,17 @@ var connection = knx.Connection({
   }
 });
 
-//----------------------------LIGHT---------------------------------------------
-
-
-var knxLightSwitch = [];
-var knxLightDim = [];
-var knxScreens = [];
-var knxSensors = [];
-var knxTriggers = [];
 
 //---------------------connect switch lights-----------------------------//
 
 for(j in lights){
   console.log("index switch is " + j + "!!!!!!!!!!!");
-  knxLightSwitch[j] = new knx.Devices.BinarySwitch(
+  knxCom.lights.ga[j] = new knx.Devices.BinarySwitch(
     {ga: lights[j].ga, status_ga: lights[j].status_ga},
     connection
   );
-  console.log("The light %j status is %j", j, knxLightSwitch[j].status.current_value);
+  console.log("The light %j status is %j",
+  j, knxCom.lights.ga[j].status.current_value);
 }
 
 //---------------------connect dim lights-----------------------------//
@@ -71,85 +63,46 @@ for(j in lights){
 for(j in lights){
   console.log("index dim is " + j + "!!!!!!!!!!!");
   if(typeof lights[j].dim !== "undefined"){
-    knxLightDim[j] = new ValDimmer(
+    knxCom.dimlights.ga[j] = new ValDimmer(
       {ga: lights[j].dim, status_ga: lights[j].status_dim},
       connection
     );
-    console.log("The light %j status is %j", j, knxLightDim[j].status.current_value);
+    console.log("The light %j status is %j",
+    j, knxCom.dimlights.ga[j].status.current_value);
   }
 }
 
 //---------------------connect screens-----------------------------//
 for(j in screens){
   console.log("index screen is " + j + "!!!!!!!!!!!");
-    knxScreens[j] = new Screen(
+    knxCom.screens.ga[j] = new Screen(
       {ga: screens[j].ga, status_ga: screens[j].status_ga},
       connection
     );
-    console.log("The screen %j status is %j", j, knxScreens[j].status.current_value);
+    console.log("The screen %j status is %j",
+    j, knxCom.screens.ga[j].status.current_value);
 }
 
 //---------------------connect sensor-----------------------------//
 for(j in sensors){
   console.log("index sensor is " + j + "!!!!!!!!!!!");
-    knxSensors[j] = new Sensor(
+    knxCom.sensors.ga[j] = new Sensor(
       {sensor: sensors[j].sensor},
       connection
     );
-    console.log("The %j status is %j",sensors[j].name , knxSensors[j].status.current_value);
+    console.log("The %j status is %j",
+    sensors[j].name ,
+    knxCom.sensors.ga[j].status.current_value);
 }
 
 //---------------------connect sensor-----------------------------//
 for(j in triggers){
   console.log("index trigger is " + j + "!!!!!!!!!!!");
-    knxTriggers[j] = new Trigger(
+    knxCom.triggers.ga[j] = new Trigger(
       {ga: triggers[j].ga, status_ga: triggers[j].status_ga},
       connection
     );
     //console.log("The %j status is %j",triggers[j].name , knxTriggers[j].status.current_value);
 }
 
-//listen for status changes
-/*
-knxLightSwitch[0].status.on('change', function(oldvalue, newvalue) {
-  console.log("**** LIGHT status changed from: %j to: %j", oldvalue, newvalue);
-});
-knxLightDim[0].status.on('change', function(oldvalue, newvalue) {
-  console.log("**** LIGHT dim status changed from: %j to: %j", oldvalue, newvalue);
-});
-
-*/
-
-//---------------------connect switch lights-----------------------------//
-
-
-//var light = new knx.Devices.BinarySwitch({ga: '1/0/0', status_ga: '1/0/1'}, connection);
-//console.log("The current light status is %j", light.status.current_value);
-
-
-//----------------------------DIM-----------------------------------------------
-
-//var lightDim = new ValDimmer({ga: '1/0/3', status_ga: '1/0/4'}, connection);
-//console.log("The current light status is %j", lightDim.status.current_value);
-
-
-
-/*
-var temp = new Temp({ga: '0/1/1', status_ga: '0/0/4'}, connection);
-//console.log("The current light status is %j", lightDim.status.current_value);
-
-//lightDim.control.on('change', function(oldvalue, newvalue) {
-  //console.log("**** DIM control changed from: %j to: %j", oldvalue, newvalue);
-//});
-temp.status.on('change', function(oldvalue, newvalue) {
-  console.log("**** Temp changed from: %j to: %j", oldvalue, newvalue);
-});
-*/
-
-
-
-module.exports.knxLightSwitch = knxLightSwitch
-module.exports.knxLightDim = knxLightDim
-module.exports.knxScreens = knxScreens
-module.exports.knxSensors = knxSensors
-module.exports.knxTriggers = knxTriggers
+module.exports.knxCom = knxCom
