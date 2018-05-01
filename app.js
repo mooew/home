@@ -1,45 +1,40 @@
 const WebSocket = require('ws');
 
-var light = require('./knx.js').light
-var lightDim = require('./knx.js').lightDim
+var knxCom = require('./knx.js').knxCom
 
 var knxLightSwitch = require('./knx.js').knxLightSwitch
 var knxLightDim = require('./knx.js').knxLightDim
-
-//var temp = require('./knx.js').temp
-
-
+var knxScreens = require('./knx.js').knxScreens
+var knxSensors = require('./knx.js').knxSensors
+var knxTriggers = require('./knx.js').knxTriggers
 
 const wss = new WebSocket.Server({ port: 8080 });
 
-for( let i in knxLightSwitch){
-  console.log("listening for light status %j", +i + 1);
-  knxLightSwitch[i].status.on('change', function(oldvalue, newvalue) {
-    console.log("#### feedback LIGHT %j status: %j", +i + 1, newvalue);
-    var res = { topic: +i + 1, payload: newvalue };
-    wss.clients.forEach(function each(client) {
-      if ( client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(res));
-      } else {
-        console.log("sorry client is closed");
-      };
-    });
+function socketSend(resp){
+  wss.clients.forEach(function each(client) {
+    if ( client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(resp));
+    } else {
+      console.log("sorry client is closed");
+    };
   });
 };
 
-for( let i in knxLightDim){
-  console.log("listening for light dim %j", i);
-  knxLightDim[i].status.on('change', function(oldvalue, newvalue) {
-    console.log("#### feedback LIGHT %j DIM status: %j", +i + 101, newvalue);
-    var res = { topic: +i + 101, payload: newvalue};
-    wss.clients.forEach(function each(client) {
-      if ( client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(res));
-      } else {
-        console.log("sorry client is closed");
-      };
-    });
-  });
+//////////////////Listen for KNX//////////////////////////
+for(let j in knxCom){
+  for(let i in knxCom[j].ga){
+    console.log("binde to %j", knxCom[j].ga[i].id)
+    //only bind if we have status_ga
+    if(typeof knxCom[j].ga[i].status_ga !== "undefined"){
+      knxCom[j].ga[i].status.on('change', function(oldvalue, newvalue) {
+        console.log("#### feedback %j gui %j status: %j",
+          knxCom[j].ga[i].id,
+          +i + 1 + knxCom[j].offset,
+          newvalue);
+        socketSend({ topic: +i + 1 + knxCom[j].offset, payload: newvalue });
+      });
+    };
+  };
 };
 
 wss.on('connection', function connection(ws, req) {
@@ -47,41 +42,33 @@ wss.on('connection', function connection(ws, req) {
   console.log("Socket connected to: " + ip);
 
 
-//--------------------INCOMING--------------------------------//
-  ws.on('message', function incoming(message) {
-    console.log('received: %s', message);
+//--------------------INCOMING SOCKET SEND KNX--------------------------------//
+ws.on('message', function incoming(message) {
+    //console.log('received: %s', message);
 
     var obj = JSON.parse(message)
     var id = parseInt(obj.topic)
     console.log('gui: ' + obj.topic + ' is updated to: ' + obj.payload);
+//LIGHTS
     if(id < 100){
-      if(obj.payload){
-        knxLightSwitch[id-1].switchOn();
-      }
-      else {
+      obj.payload ? knxCom.lights.ga[id-1].switchOn() : knxCom.lights.ga[id-1].switchOff();
+//DIMMERS
+    }else if(id >= 100 && id < 200){
+      knxCom.dimmers.ga[id-101].write(obj.payload); //dim vaulue
+//SCREENS
+    }else if(id >= 200 && id < 300){
+      knxCom.screens.ga[id-201].write(obj.payload); //TargetPosition
+//SWITCHES
+    }else if(id >= 400 && id < 500){
+      obj.payload ? knxCom.triggers.ga[id-401].switchOn() : knxCom.triggers.ga[id-401].switchOff();
+    };
+});
 
-        knxLightSwitch[id-1].switchOff();
-      }
-    }else if(id >= 100){
-        knxLightDim[id-101].write(obj.payload);
-    }
-
-
-  });
-  ws.on('close', function close() {
+ws.on('close', function close() {
   console.log('disconnected');
-  });
+});
 
 
-
-
-/*
-  temp.status.on('change', function(oldvalue, newvalue) {
-    console.log("#### feedback temp status: %j", newvalue);
-    var res = { topic: 'temp1', payload: newvalue }
-    ws.send(JSON.stringify(res));
-  });
-*/
 
 
 });

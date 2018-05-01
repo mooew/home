@@ -6,7 +6,7 @@
 const util = require('util');
 const knx = require('knx');
 
-function Temp(options, conn) {
+function Value(options, conn) {
   if (options == null || options.ga == null) {
     throw "must supply at least { ga }!";
   }
@@ -15,7 +15,7 @@ function Temp(options, conn) {
   if (conn) this.bind(conn);
 }
 
-Temp.prototype.bind = function (conn) {
+Value.prototype.bind = function (conn) {
   if (!conn) console.trace("must supply a valid KNX connection to bind to");
   this.conn = conn;
   this.control = new knx.Datapoint({ga: this.control_ga, dpt: 'DPT5.001'}, conn);
@@ -25,7 +25,7 @@ Temp.prototype.bind = function (conn) {
 }
 
 // EventEmitter proxy for status ga (if its set), otherwise proxy control ga
-Temp.prototype.on = function () {
+Value.prototype.on = function () {
   var argsArray = Array.prototype.slice.call(arguments);
   var tgt = (this.status_ga ? this.status : this.control);
   // if(this.status_ga){this.status}
@@ -37,20 +37,20 @@ Temp.prototype.on = function () {
   }
 }
 
-Temp.prototype.dim = function (value) {
+Value.prototype.dim = function (value) {
   if (!this.conn) console.trace("must supply a valid KNX connection to bind to");
   this.control.write(value);
   console.log(value);
 }
 
-Temp.prototype.switchOff = function () {
+Value.prototype.switchOff = function () {
   if (!this.conn) console.trace("must supply a valid KNX connection to bind to");
   this.control.write(0);
 }
 
-Temp.prototype.write = function (v) {
+Value.prototype.write = function (v) {
   if (!this.conn) console.trace("must supply a valid KNX connection to bind to");
   this.control.write(v);
 }
 
-module.exports.Temp = Temp;
+module.exports.Value = Value;
