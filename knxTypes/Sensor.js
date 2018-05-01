@@ -6,26 +6,28 @@
 const util = require('util');
 const knx = require('knx');
 
-function ValDimmer(options, conn) {
-  if (options == null || options.ga == null) {
-    throw "must supply at least { ga }!";
+function Sensor(options, conn) {
+  if (options == null || options.status_ga == null) {
+    throw "must supply at least { status_ga }!";
   }
   this.control_ga = options.ga;
   this.status_ga = options.status_ga;
   if (conn) this.bind(conn);
 }
 
-ValDimmer.prototype.bind = function (conn) {
+Sensor.prototype.bind = function (conn) {
   if (!conn) console.trace("must supply a valid KNX connection to bind to");
   this.conn = conn;
-  this.control = new knx.Datapoint({ga: this.control_ga, dpt: 'DPT5.001'}, conn);
+  if (this.control_ga) {
+  this.control = new knx.Datapoint({ga: this.control_ga, dpt: 'DPT9.000'}, conn);
+}
   if (this.status_ga) {
-    this.status = new knx.Datapoint({ga: this.status_ga, dpt: 'DPT5.001'}, conn);
+    this.status = new knx.Datapoint({ga: this.status_ga, dpt: 'DPT9.000'}, conn);
   }
 }
 
 // EventEmitter proxy for status ga (if its set), otherwise proxy control ga
-ValDimmer.prototype.on = function () {
+Sensor.prototype.on = function () {
   var argsArray = Array.prototype.slice.call(arguments);
   var tgt = (this.status_ga ? this.status : this.control);
   // if(this.status_ga){this.status}
@@ -37,20 +39,23 @@ ValDimmer.prototype.on = function () {
   }
 }
 
-ValDimmer.prototype.dim = function (value) {
+
+// UNUSED //
+Sensor.prototype.dim = function (value) {
   if (!this.conn) console.trace("must supply a valid KNX connection to bind to");
   this.control.write(value);
   console.log(value);
 }
 
-ValDimmer.prototype.switchOff = function () {
+Sensor.prototype.switchOff = function () {
   if (!this.conn) console.trace("must supply a valid KNX connection to bind to");
   this.control.write(0);
 }
 
-ValDimmer.prototype.write = function (v) {
+Sensor.prototype.write = function (v) {
   if (!this.conn) console.trace("must supply a valid KNX connection to bind to");
   this.control.write(v);
 }
+// UNUSED //
 
-module.exports.ValDimmer = ValDimmer;
+module.exports.Sensor = Sensor;
